@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+from __future__ import print_function
+
 import roslib
-roslib.load_manifest('my_package')
+roslib.load_manifest('multi_human_pose_estimation')
 import sys
 import rospy
 import cv2
@@ -12,12 +14,11 @@ import cv2
 import math
 import time
 import numpy as np
-import util
-from config_reader import config_reader
 from scipy.ndimage.filters import gaussian_filter
-from keras_Realtime_Multi-Person_Pose_Estimation.model import get_model
-from keras_Realtime_Multi-Person_Pose_Estimation.predict import process
-from __future__ import print_function
+from multi_human_pose_estimation.keras_Realtime_Multi_Person_Pose_Estimation import config_reader
+import keras_Realtime_Multi_Person_Pose_Estimation.util
+import keras_Realtime_Multi_Person_Pose_Estimation.get_model
+import keras_Realtime_Multi_Person_Pose_Estimation.process
 
 keras_weights_file = "model/keras/model.h5"
 
