@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 from __future__ import print_function
 
 import roslib
@@ -15,10 +16,9 @@ import math
 import time
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter
-from multi_human_pose_estimation.keras_Realtime_Multi_Person_Pose_Estimation import config_reader
-import keras_Realtime_Multi_Person_Pose_Estimation.util
-import keras_Realtime_Multi_Person_Pose_Estimation.get_model
-import keras_Realtime_Multi_Person_Pose_Estimation.process
+import keras_Realtime_Multi_Person_Pose_Estimation.config_reader
+import keras_Realtime_Multi_Person_Pose_Estimation.model
+
 
 keras_weights_file = "model/keras/model.h5"
 

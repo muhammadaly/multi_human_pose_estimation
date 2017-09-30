@@ -1,13 +1,14 @@
 import argparse
-import cv2
 import math
-import time
 import numpy as np
+import time
+
+import cv2
+from scipy.ndimage.filters import gaussian_filter
+
 import util
 from config_reader import config_reader
-from scipy.ndimage.filters import gaussian_filter
-from model import get_model
-
+from src.keras_Realtime_Multi_Person_Pose_Estimation.model import get_model
 
 keras_weights_file = "model/keras/model.h5"
 
