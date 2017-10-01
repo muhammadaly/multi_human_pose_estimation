@@ -1,5 +1,4 @@
 import argparse
-import sys
 import math
 import numpy as np
 import time
@@ -10,7 +9,7 @@ import util
 from config_reader import config_reader
 from model import get_model
 
-keras_weights_file = "keras_Realtime_Multi_Person_Pose_Estimation/model/keras/model.h5"
+keras_weights_file = "/home/ivsystems/ros_workspaces/master/src/multi_human_pose_estimation/src/keras_Realtime_Multi_Person_Pose_Estimation/model/keras/model.h5"
 
 # find connection in the specified sequence, center 29 is in the position 15
 limbSeq = [[2, 3], [2, 6], [3, 4], [4, 5], [6, 7], [7, 8], [2, 9], [9, 10], \
@@ -32,7 +31,6 @@ colors = [[255, 0, 0], [255, 85, 0], [255, 170, 0], [255, 255, 0], [170, 255, 0]
 
 class predict:
     def __init__(self):
-        print sys.path
         # load model
         self.model = get_model()
         self.model.load_weights(keras_weights_file)
@@ -44,7 +42,8 @@ class predict:
         tic = time.time()
         print('start processing...')
 
-        oriImg = cv2.imread(input_image)  # B,G,R order
+        # oriImg = cv2.imread(input_image)  # B,G,R order
+        oriImg = input_image
         multiplier = [x * self.model_params['boxsize'] / oriImg.shape[0] for x in self.params['scale_search']]
 
         heatmap_avg = np.zeros((oriImg.shape[0], oriImg.shape[1], 19))
@@ -212,7 +211,7 @@ class predict:
                 deleteIdx.append(i)
         subset = np.delete(subset, deleteIdx, axis=0)
 
-        canvas = cv2.imread(input_image)  # B,G,R order
+        canvas = input_image  # B,G,R order
         for i in range(18):
             for j in range(len(all_peaks[i])):
                 cv2.circle(canvas, all_peaks[i][j][0:2], 4, colors[i], thickness=-1)

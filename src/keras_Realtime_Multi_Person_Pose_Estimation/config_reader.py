@@ -3,7 +3,7 @@ import numpy as np
 
 
 def config_reader():
-    config = ConfigObj('config')
+    config = ConfigObj('/home/ivsystems/ros_workspaces/master/src/multi_human_pose_estimation/src/keras_Realtime_Multi_Person_Pose_Estimation/config')
 
     param = config['param']
     model_id = param['modelID']

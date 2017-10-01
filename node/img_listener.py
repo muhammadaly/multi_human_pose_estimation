@@ -10,8 +10,6 @@ from cv_bridge import CvBridge, CvBridgeError
 import cv2
 from keras_Realtime_Multi_Person_Pose_Estimation.predict import predict
 
-keras_weights_file = "model/keras/model.h5"
-
 class img_listner:
 
   def __init__(self):
@@ -28,11 +26,11 @@ class img_listner:
     except CvBridgeError as e:
       print(e)
 
-def main(args):
+def main():
   ic = img_listner()
   rospy.init_node('img_listner', anonymous=True)
   rospy.spin()
   cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()
