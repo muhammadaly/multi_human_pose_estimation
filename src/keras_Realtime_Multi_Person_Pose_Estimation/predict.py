@@ -33,13 +33,15 @@ colors = [[255, 0, 0], [255, 85, 0], [255, 170, 0], [255, 255, 0], [170, 255, 0]
 class predict:
     def __init__(self):
         self.params, self.model_params = config_reader()
-	self.model = get_model()
-	self.model.load_weights(keras_weights_file)
 	
     def process (self,input_image):
 	tic = time.time()
         print('start processing...')
-	
+	model = get_model()
+	model.load_weights(keras_weights_file)
+	toc = time.time()
+        print ('reading time is %.5f' % (toc - tic))
+
         multiplier = [x * self.model_params['boxsize'] / input_image.shape[0] for x in self.params['scale_search']]
 
         heatmap_avg = np.zeros((input_image.shape[0], input_image.shape[1], 19))
@@ -51,7 +53,7 @@ class predict:
                                                               self.model_params['padValue'])
             input_img = np.transpose(np.float32(imageToTest_padded[:,:,:,np.newaxis]), (3,0,1,2))/256 - 0.5; 
 
-            output_blobs = self.model.predict(input_img)
+            output_blobs = model.predict(input_img)
 
             heatmap = np.squeeze(output_blobs[1])
             heatmap = cv2.resize(heatmap, (0, 0), fx=self.model_params['stride'], fy=self.model_params['stride'],
