@@ -15,7 +15,7 @@ class img_listner:
   def __init__(self):
     self.bridge = CvBridge()
     self.predictor = predict()
-    self.image_sub = rospy.Subscriber("/zed/rgb/image_rect_color", Image, self.callback)
+    self.image_sub = rospy.Subscriber("image_topic", Image, self.callback)
 
   def callback(self,data):
     try:

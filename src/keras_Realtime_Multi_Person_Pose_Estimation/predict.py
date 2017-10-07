@@ -9,7 +9,9 @@ import util
 from config_reader import config_reader
 from model import get_model
 
-keras_weights_file = "/home/ros/ros_workspace/amp/src/multi_human_pose_estimation/src/keras_Realtime_Multi_Person_Pose_Estimation/model/keras/model.h5"
+machine_name = 'ivsystems'
+workspace_name = 'master'
+keras_weights_file = "/home/"+machine_name+"/ros_workspaces/"+workspace_name+"/src/multi_human_pose_estimation/src/keras_Realtime_Multi_Person_Pose_Estimation/model/keras/model.h5"
 
 # find connection in the specified sequence, center 29 is in the position 15
 limbSeq = [[2, 3], [2, 6], [3, 4], [4, 5], [6, 7], [7, 8], [2, 9], [9, 10], \
