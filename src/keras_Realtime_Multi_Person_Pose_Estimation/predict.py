@@ -29,50 +29,41 @@ colors = [[255, 0, 0], [255, 85, 0], [255, 170, 0], [255, 255, 0], [170, 255, 0]
           [170, 0, 255], [255, 0, 255], [255, 0, 170], [255, 0, 85]]
 
 
+	
 class predict:
     def __init__(self):
-        # load model
-        self.model = get_model()
-        self.model.load_weights(keras_weights_file)
-
-        # load config
         self.params, self.model_params = config_reader()
-
+	self.model = get_model()
+	self.model.load_weights(keras_weights_file)
+	
     def process (self,input_image):
-        tic = time.time()
+	tic = time.time()
         print('start processing...')
+	
+        multiplier = [x * self.model_params['boxsize'] / input_image.shape[0] for x in self.params['scale_search']]
 
-        # oriImg = cv2.imread(input_image)  # B,G,R order
-        oriImg = input_image
-        multiplier = [x * self.model_params['boxsize'] / oriImg.shape[0] for x in self.params['scale_search']]
-
-        heatmap_avg = np.zeros((oriImg.shape[0], oriImg.shape[1], 19))
-        paf_avg = np.zeros((oriImg.shape[0], oriImg.shape[1], 38))
-
+        heatmap_avg = np.zeros((input_image.shape[0], input_image.shape[1], 19))
+        paf_avg = np.zeros((input_image.shape[0], input_image.shape[1], 38))
         for m in range(len(multiplier)):
             scale = multiplier[m]
-
-            imageToTest = cv2.resize(oriImg, (0, 0), fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+            imageToTest = cv2.resize(input_image, (0, 0), fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
             imageToTest_padded, pad = util.padRightDownCorner(imageToTest, self.model_params['stride'],
                                                               self.model_params['padValue'])
-
-            input_img = np.transpose(np.float32(imageToTest_padded[:,:,:,np.newaxis]), (3,0,1,2))/256 - 0.5; # required shape (1, width, height, channels)
+            input_img = np.transpose(np.float32(imageToTest_padded[:,:,:,np.newaxis]), (3,0,1,2))/256 - 0.5; 
 
             output_blobs = self.model.predict(input_img)
 
-            # extract outputs, resize, and remove padding
-            heatmap = np.squeeze(output_blobs[1])  # output 1 is heatmaps
+            heatmap = np.squeeze(output_blobs[1])
             heatmap = cv2.resize(heatmap, (0, 0), fx=self.model_params['stride'], fy=self.model_params['stride'],
                                  interpolation=cv2.INTER_CUBIC)
             heatmap = heatmap[:imageToTest_padded.shape[0] - pad[2], :imageToTest_padded.shape[1] - pad[3],
                       :]
-            heatmap = cv2.resize(heatmap, (oriImg.shape[1], oriImg.shape[0]), interpolation=cv2.INTER_CUBIC)
-
-            paf = np.squeeze(output_blobs[0])  # output 0 is PAFs
+            heatmap = cv2.resize(heatmap, (input_image.shape[1], input_image.shape[0]), interpolation=cv2.INTER_CUBIC)
+            paf = np.squeeze(output_blobs[0]) 
             paf = cv2.resize(paf, (0, 0), fx=self.model_params['stride'], fy=self.model_params['stride'],
                              interpolation=cv2.INTER_CUBIC)
             paf = paf[:imageToTest_padded.shape[0] - pad[2], :imageToTest_padded.shape[1] - pad[3], :]
-            paf = cv2.resize(paf, (oriImg.shape[1], oriImg.shape[0]), interpolation=cv2.INTER_CUBIC)
+            paf = cv2.resize(paf, (input_image.shape[1], input_image.shape[0]), interpolation=cv2.INTER_CUBIC)
 
             heatmap_avg = heatmap_avg + heatmap / len(multiplier)
             paf_avg = paf_avg + paf / len(multiplier)
@@ -95,7 +86,7 @@ class predict:
 
             peaks_binary = np.logical_and.reduce(
                 (map >= map_left, map >= map_right, map >= map_up, map >= map_down, map > self.params['thre1']))
-            peaks = list(zip(np.nonzero(peaks_binary)[1], np.nonzero(peaks_binary)[0]))  # note reverse
+            peaks = list(zip(np.nonzero(peaks_binary)[1], np.nonzero(peaks_binary)[0])) 
             peaks_with_score = [x + (map_ori[x[1], x[0]],) for x in peaks]
             id = range(peak_counter, peak_counter + len(peaks))
             peaks_with_score_and_id = [peaks_with_score[i] + (id[i],) for i in range(len(id))]
@@ -134,7 +125,7 @@ class predict:
 
                         score_midpts = np.multiply(vec_x, vec[0]) + np.multiply(vec_y, vec[1])
                         score_with_dist_prior = sum(score_midpts) / len(score_midpts) + min(
-                            0.5 * oriImg.shape[0] / norm - 1, 0)
+                            0.5 * input_image.shape[0] / norm - 1, 0)
                         criterion1 = len(np.nonzero(score_midpts > self.params['thre2'])[0]) > 0.8 * len(
                             score_midpts)
                         criterion2 = score_with_dist_prior > 0
@@ -156,8 +147,6 @@ class predict:
                 special_k.append(k)
                 connection_all.append([])
 
-        # last number in each row is the total parts number of that person
-        # the second last number in each row is the score of the overall configuration
         subset = -1 * np.ones((0, 20))
         candidate = np.array([item for sublist in all_peaks for item in sublist])
 

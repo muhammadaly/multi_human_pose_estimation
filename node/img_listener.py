@@ -19,11 +19,11 @@ class img_listner:
 
   def callback(self,data):
     try:
-      rospy.loginfo('hi')
+      
       cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
       cv_result = self.predictor.process(cv_image)
-      #cv2.imshow("Image window", cv_result )
-      #cv2.waitKey(3)
+      cv2.imshow("Image window", cv_result )
+      cv2.waitKey(3)
     except CvBridgeError as e:
       print(e)
 
